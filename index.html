@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晚安 💤</title>
+    <style>
+        /* ========== 基础重置 & 字体 ========== */
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0c0e30 0%, #1a1040 30%, #2d1b69 60%, #1a1040 100%);
+            overflow-x: hidden;
+            font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
+            color: #f0e6ff;
+        }
+
+        /* ========== 密码验证界面样式 ========== */
+        .password-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: linear-gradient(135deg, #0c0e30 0%, #1a1040 100%);
+        }
+
+        .password-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px 35px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .password-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2rem;
+            color: #f8bbd0;
+            margin-bottom: 25px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 1px solid rgba(186, 104, 200, 0.5);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #f0e6ff;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .password-input::placeholder {
+            color: rgba(179, 157, 219, 0.6);
+        }
+
+        .password-btn {
+            padding: 12px 40px;
+            font-size: 1.1rem;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            color: #fff;
+            background: linear-gradient(135deg, #7c4dff, #b388ff, #ea80fc);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 25px rgba(124, 77, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 35px rgba(124, 77, 255, 0.6);
+        }
+
+        .error-message {
+            color: #ff8a80;
+            margin-top: 15px;
+            font-size: 1rem;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
+
+        /* ========== 星星背景 ========== */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* ========== 月亮 ========== */
+        .moon {
+            position: fixed;
+            top: 40px;
+            right: 60px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 35% 35%, #fff9c4, #ffe082);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 248, 180, 0.4),
+                        0 0 80px rgba(255, 248, 180, 0.2),
+                        0 0 120px rgba(255, 248, 180, 0.1);
+            z-index: 1;
+            animation: moonGlow 4s ease-in-out infinite;
+        }
+
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 65px;
+            height: 65px;
+            background: #1a1040;
+            border-radius: 50%;
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255,248,180,0.4), 0 0 80px rgba(255,248,180,0.2); }
+            50% { box-shadow: 0 0 60px rgba(255,248,180,0.6), 0 0 100px rgba(255,248,180,0.3); }
+        }
+
+        /* ========== 流星 ========== */
+        .shooting-star {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,255,255,0), #fff);
+            transform: rotate(-45deg);
+            transform-origin: right;
+        }
+
+        .shooting-star:nth-child(1) {
+            top: 15%;
+            left: 30%;
+            animation: shoot 6s ease-in-out infinite 2s;
+        }
+
+        .shooting-star:nth-child(2) {
+            top: 25%;
+            left: 60%;
+            animation: shoot 8s ease-in-out infinite 5s;
+        }
+
+        @keyframes shoot {
+            0% { opacity: 0; transform: translate(0, 0); }
+            2% { opacity: 1; }
+            8% { opacity: 0; transform: translate(-200px, 200px); }
+            100% { opacity: 0; }
+        }
+
+        /* ========== 萤火虫 ========== */
+        .firefly {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #fff9c4, transparent);
+            border-radius: 50%;
+            z-index: 1;
+            animation: firefly-move 12s ease-in-out infinite;
+        }
+
+        .firefly:nth-child(1) { top: 60%; left: 10%; animation-delay: 0s; }
+        .firefly:nth-child(2) { top: 70%; left: 80%; animation-delay: 3s; }
+        .firefly:nth-child(3) { top: 50%; left: 50%; animation-delay: 6s; }
+
+        @keyframes firefly-move {
+            0%, 100% { opacity: 0; transform: translate(0, 0); }
+            25% { opacity: 0.8; transform: translate(30px, -20px); }
+            50% { opacity: 0.3; transform: translate(-20px, -40px); }
+            75% { opacity: 0.9; transform: translate(10px, -10px); }
+        }
+
+        /* ========== 页面容器 ========== */
+        .page {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 30px 20px;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            /* 默认隐藏主页面，验证通过后显示 */
+            display: none;
+        }
+
+        .page.hidden {
+            display: none;
+        }
+
+        .page.fade-out {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .page.fade-in {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== 首页 - 照片 ========== */
+        .photo-frame {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            padding: 6px;
+            background: linear-gradient(135deg, #e1bee7, #ce93d8, #ba68c8, #ab47bc);
+            box-shadow: 0 0 30px rgba(186, 104, 200, 0.4),
+                        0 0 60px rgba(186, 104, 200, 0.2);
+            margin-bottom: 30px;
+            animation: photoFloat 5s ease-in-out infinite;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 照片周围的装饰小星星 */
+        .photo-frame::before {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            font-size: 24px;
+            animation: decorSpin 3s linear infinite;
+        }
+
+        .photo-frame::after {
+            content: '🌟';
+            position: absolute;
+            bottom: -5px;
+            left: -10px;
+            font-size: 20px;
+            animation: decorSpin 4s linear infinite reverse;
+        }
+
+        @keyframes photoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes decorSpin {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(15deg); }
+        }
+
+        /* ========== 晚安文字 ========== */
+        .goodnight-text {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .goodnight-text h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #f8bbd0, #e1bee7, #b3e5fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            margin-bottom: 8px;
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        .goodnight-text .name {
+            font-size: 1.6rem;
+            color: #f8bbd0;
+            margin-bottom: 20px;
+        }
+
+        .goodnight-text .quote {
+            font-size: 1.1rem;
+            color: #b39ddb;
+            max-width: 400px;
+            line-height: 1.8;
+            margin: 0 auto;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes textGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        /* ========== 睡前故事按钮 ========== */
+        .story-btn {
+            margin-top: 35px;
+            padding: 16px 45px;
+            font-size: 1.15rem;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            color: #fff;
+            background: linear-gradient(135deg, #7c4dff, #b388ff, #ea80fc);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 25px rgba(124, 77, 255, 0.4);
+            transition: all 0.3s ease;
+            animation: btnPulse 3s ease-in-out infinite;
+        }
+
+        .story-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 35px rgba(124, 77, 255, 0.6);
+        }
+
+        .story-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .story-btn::before {
+            content: '📖 ';
+        }
+
+        .story-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: btnShine 4s ease-in-out infinite;
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 6px 25px rgba(124, 77, 255, 0.4); }
+            50% { box-shadow: 0 6px 35px rgba(124, 77, 255, 0.6), 0 0 15px rgba(234, 128, 252, 0.3); }
+        }
+
+        @keyframes btnShine {
+            0% { transform: rotate(45deg) translateY(-100%); }
+            30%, 100% { transform: rotate(45deg) translateY(100%); }
+        }
+
+        /* ========== 故事页面 ========== */
+        .story-page {
+            padding: 40px 20px 60px;
+        }
+
+        .story-card {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px 35px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: cardAppear 0.8s ease forwards;
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .story-card .story-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #f8bbd0;
+        }
+
+        .story-card .story-title::before {
+            content: '🌙 ';
+        }
+
+        .story-card .story-title::after {
+            content: ' 🌙';
+        }
+
+        .story-card .story-content {
+            font-size: 1.05rem;
+            line-height: 2.2;
+            color: #d1c4e9;
+            text-indent: 2em;
+            white-space: pre-wrap;
+        }
+
+        .story-card .story-content p {
+            margin-bottom: 15px;
+            text-indent: 2em;
+        }
+
+        .story-ending {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #b39ddb;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            margin-top: 30px;
+            padding: 14px 40px;
+            font-size: 1.05rem;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            color: #fff;
+            background: linear-gradient(135deg, #5c6bc0, #7986cb);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(92, 107, 192, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn::before {
+            content: '🌛 ';
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(92, 107, 192, 0.5);
+        }
+
+        /* ========== 底部小云朵装饰 ========== */
+        .clouds {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50px;
+            animation: cloudDrift linear infinite;
+        }
+
+        .cloud:nth-child(1) {
+            width: 200px; height: 40px; bottom: 10px; left: -200px;
+            animation-duration: 35s;
+        }
+        .cloud:nth-child(2) {
+            width: 150px; height: 30px; bottom: 30px; left: -150px;
+            animation-duration: 45s;
+            animation-delay: 5s;
+        }
+        .cloud:nth-child(3) {
+            width: 250px; height: 45px; bottom: 5px; left: -250px;
+            animation-duration: 40s;
+            animation-delay: 15s;
+        }
+
+        @keyframes cloudDrift {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(100vw + 300px)); }
+        }
+
+        /* ========== Z字符 (打呼噜效果) ========== */
+        .zzz {
+            position: fixed;
+            bottom: 120px;
+            right: 50px;
+            font-size: 1.5rem;
+            color: rgba(179, 157, 219, 0.6);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .zzz span {
+            display: inline-block;
+            animation: zzzFloat 3s ease-in-out infinite;
+        }
+
+        .zzz span:nth-child(1) { font-size: 1rem; animation-delay: 0s; }
+        .zzz span:nth-child(2) { font-size: 1.3rem; animation-delay: 0.5s; }
+        .zzz span:nth-child(3) { font-size: 1.6rem; animation-delay: 1s; }
+
+        @keyframes zzzFloat {
+            0%, 100% { opacity: 0.3; transform: translateY(0) translateX(0); }
+            50% { opacity: 0.8; transform: translateY(-20px) translateX(10px); }
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 480px) {
+            .photo-frame {
+                width: 170px;
+                height: 170px;
+            }
+
+            .goodnight-text h1 {
+                font-size: 2.2rem;
+            }
+
+            .goodnight-text .name {
+                font-size: 1.3rem;
+            }
+
+            .story-card {
+                padding: 25px 20px;
+            }
+
+            .moon {
+                width: 50px;
+                height: 50px;
+                top: 25px;
+                right: 30px;
+            }
+
+            .moon::after {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .password-card {
+                padding: 30px 25px;
+            }
+            
+            .password-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== 密码验证界面 ===== -->
+    <div class="password-container" id="passwordContainer">
+        <div class="password-card">
+            <h2 class="password-title">🔒 请输入晚安密码 🔒</h2>
+            <input type="password" class="password-input" id="passwordInput" placeholder="输入密码解锁晚安祝福...">
+            <button class="password-btn" onclick="checkPassword()">解锁 ✨</button>
+            <div class="error-message" id="errorMessage">密码错误啦，再试试～</div>
+        </div>
+    </div>
+
+    <!-- ===== 背景装饰 ===== -->
+    <div class="stars-container" id="stars"></div>
+    <div class="moon"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="zzz">
+        <span>z</span><span>Z</span><span>Z</span>
+    </div>
+    <div class="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+
+    <!-- ===== 首页：晚安页 ===== -->
+    <div class="page" id="page-home">
+        <div class="photo-frame">
+            <!-- ★ 把 photo.jpg 换成你的照片文件名 ★ -->
+            <img src="photo.jpg" alt="照片"
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><rect fill=%22%237c4dff%22 width=%22200%22 height=%22200%22/><text x=%2250%%22 y=%2250%%22 font-size=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22>🌙</text></svg>'">
+        </div>
+
+        <div class="goodnight-text">
+            <!-- ★ 改成你想对TA说的名字 ★ -->
+            <h1>晚安好梦 🌙</h1>
+            <p class="name">💜 可爱的周羽晨小狗 💜</p>
+
+            <!-- ★ 改成你想说的晚安词 ★ -->
+            <p class="quote">
+                你要裹紧小被子早早睡，<br>
+                不然我在梦里找不到你，<br>
+                就打不了屁屁了，<br>
+                晚安小狗 🌟<br>
+                愿你今夜有个甜甜的梦～
+            </p>
+        </div>
+
+        <button class="story-btn" onclick="goToStory()">睡前故事</button>
+    </div>
+
+    <!-- ===== 第二页：睡前故事页 ===== -->
+    <div class="page story-page" id="page-story">
+        <div class="story-card">
+            <!-- ★ 改成你想讲的故事标题 ★ -->
+            <h2 class="story-title">小星星找朋友</h2>
+
+            <!-- ★ 改成你想讲的故事内容 ★ -->
+            <div class="story-content">
+                <p>在很高很高的天上，住着一颗小小的星星。她叫小亮亮，是夜空里最小的那一颗。</p>
+
+                <p>每天晚上，大星星们都忙着发光，把银色的光洒满大地。可是小亮亮太小了，她的光只有一点点，像萤火虫那么微弱。</p>
+
+                <p>"没关系的，"月亮婆婆笑眯眯地对她说，"每一颗星星的光都很重要哦。"</p>
+
+                <p>有一天晚上，小亮亮发现地面上有一个小女孩，趴在窗台上望着天空。小女孩看起来有些难过，因为她睡不着觉。</p>
+
+                <p>小亮亮使劲地闪了闪，把自己小小的光全都送给了那个小女孩。</p>
+
+                <p>小女孩看到了！她对着天空笑了笑，轻轻地说了声："小星星，谢谢你，晚安。"</p>
+
+                <p>然后，小女孩闭上眼睛，做了一个好甜好甜的梦。梦里，她和小亮亮一起在云朵上跳舞，在银河里放纸船，在月亮上荡秋千。</p>
+
+                <p>从那以后，每天晚上，小亮亮都会在天上闪啊闪，专门为那个小女孩亮着，陪她入睡。</p>
+
+                <p>就像现在，天上最亮的那颗小星星，也在为你闪烁着呢……</p>
+
+                <p>(不要再因为找不到粉底液伤心了，说不定过几天就自己回来了)</p>
+            </div>
+
+            <div class="story-ending">
+                ✨ 故事讲完啦，快闭上眼睛 ✨<br>
+                🌙 晚安，做个好梦哦 💤
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="goHome()">回到晚安</button>
+    </div>
+
+    <script>
+        // ========== 密码验证配置 ==========
+        // 你可以修改这里的密码为你想要的任意密码
+        const CORRECT_PASSWORD = "zhouyuchenxiaogou";
+        
+        // 获取密码验证相关元素
+        const passwordContainer = document.getElementById('passwordContainer');
+        const passwordInput = document.getElementById('passwordInput');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // 密码验证函数
+        function checkPassword() {
+            const inputPassword = passwordInput.value.trim();
+            
+            // 验证密码
+            if (inputPassword === CORRECT_PASSWORD) {
+                // 密码正确，隐藏验证界面，显示主界面
+                passwordContainer.style.opacity = 0;
+                setTimeout(() => {
+                    passwordContainer.style.display = 'none';
+                    // 显示主页面
+                    document.getElementById('page-home').style.display = 'flex';
+                    document.getElementById('page-home').classList.add('fade-in');
+                }, 300);
+            } else {
+                // 密码错误，显示错误提示
+                errorMessage.classList.add('show');
+                // 3秒后隐藏错误提示
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+                // 清空输入框
+                passwordInput.value = '';
+            }
+        }
+        
+        // 按回车键也能验证密码
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // ========== 生成满天星星 ==========
+        function createStars() {
+            const container = document.getElementById('stars');
+            const count = 120;
+
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        // ========== 页面切换 ==========
+        const pageHome = document.getElementById('page-home');
+        const pageStory = document.getElementById('page-story');
+
+        function goToStory() {
+            pageHome.classList.add('fade-out');
+
+            setTimeout(() => {
+                pageHome.style.display = 'none';
+                pageHome.classList.remove('fade-out');
+
+                pageStory.style.display = 'flex';
+                pageStory.classList.add('fade-in');
+
+                // 滚到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        }
+
+        function goHome() {
+            pageStory.classList.add('fade-out');
+
+            setTimeout(() => {
+                pageStory.style.display = 'none';
+                pageStory.classList.remove('fade-out', 'fade-in');
+
+                pageHome.style.display = 'flex';
+                pageHome.classList.add('fade-in');
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        }
+
+        // ========== 随机晚安词（可选，每次刷新不同） ==========
+        const quotes = [
+            "月亮躲进云里了，<br>星星开始眨眼睛，<br>风变得温温柔柔，<br>它们都在说晚安呢 🌟<br>愿你今夜有个甜甜的梦～",
+            "世界已经打烊了，<br>月亮不肯说话，<br>只有星星在偷偷地看你 ✨<br>晚安，好梦～",
+            "今天的月亮特别圆，<br>因为它偷偷吃了你的笑容 🌝<br>快睡觉吧，明天又是甜甜的一天～",
+            "把今天的烦恼都交给星星保管吧 ⭐<br>它们会在你睡着的时候<br>悄悄地把烦恼变成流星划走～",
+            "夜深了，全世界都在安静地等你入睡 🌙<br>连风都放轻了脚步<br>怕吵醒你的美梦～"
+        ];
+
+        // 取消下面注释 = 每次刷新随机显示不同晚安词
+        // const quoteEl = document.querySelector('.goodnight-text .quote');
+        // quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
+    </script>
+
+</body>
+</html>
